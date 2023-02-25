@@ -1,10 +1,11 @@
 const Chat = require("../../models/Chat.model");
 const MessageController = require("../message.controller");
 import { Request, Response } from "express";
+const Users = require("../../models/Chat.model");
 
 exports.CreateChat = async (req: Request, res: Response) => {
   //
-  let ms: Array<any>=[];
+  let ms: Array<any> = [];
   const users = [req.body.user1, req.body.user2];
   const result = new Chat({
     users,
@@ -44,7 +45,7 @@ exports.CreateChat = async (req: Request, res: Response) => {
 
 exports.GetChat = async (req: Request, res: Response) => {
   const chats = await Chat.find();
-  let user ="";
+  let user = "";
   const filteredObjects = chats.filter((obj: any) =>
     obj.users.includes(res.locals.id)
   );
@@ -53,9 +54,17 @@ exports.GetChat = async (req: Request, res: Response) => {
     filteredObjects.map(async (obj: any) => {
       if (obj.users[0] === res.locals.id) user = obj.users[1];
       else user = obj.users[0];
+      const w = await Users.findOne({ _id: user })
+        .then((data: any) => data)
+        .catch((error: Error) => {
+          return res.status(200).json({ message: error.message });
+        });
       const d = {
         id: obj._id,
-        with: user,
+        with: {
+          name: w.name,
+          _id: w._id,
+        },
         messages: [] as Array<any>,
         createdAt: obj.createdAt,
         updatedAt: obj.updatedAt,

@@ -6,7 +6,17 @@ exports.GetUserData = async (req: Request, res: Response) => {
       if (!data) {
         return res.status(404).json({ message: "User not found" });
       }
-      return res.status(200).json({ data });
+      return res.status(200).json(data);
+    })
+    .catch((error: Error) => {
+      return res.status(500).json({ message: error.message });
+    });
+};
+
+exports.GetAllUsers = async (req: Request, res: Response) => {
+  await Users.find()
+    .then((data: any) => {
+      return res.status(200).json(data);
     })
     .catch((error: Error) => {
       return res.status(500).json({ message: error.message });

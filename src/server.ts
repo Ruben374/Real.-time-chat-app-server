@@ -25,15 +25,20 @@ io.on("connection", async (socket: any) => {
   /* 
   tratamento da conexão do usuario
    */
-  socket.on("token", async (token: String) => {
-    console.log(token)
+  socket.on("token", async(token: String) => {
+    console.log(token);
     const { Credential } = jwt.verify(token, process.env.JWT_SECRET ?? "");
-    const user = {
-      idSocket: socket.id,
-      _id: Credential,
-    };
-    onlineUsers.push(user);
-    console.log(onlineUsers.length);
+    const index = onlineUsers.findIndex((user: any) => user._id === Credential);
+    if (index != -1) {
+      onlineUsers[index].idSocket = socket.id;
+    } else {
+      const user = {
+        idSocket: socket.id,
+        _id: Credential,
+      };
+      onlineUsers.push(user);
+      console.log(onlineUsers.length);
+    }
   });
   /* 
   quando é emitida uma mensagem
@@ -47,7 +52,7 @@ io.on("connection", async (socket: any) => {
     );
     //socket.broadcast.emit("received", obj);
     //console.log(onlineUsers[index]);
-    const receiverSocketId = onlineUsers[index].id;
+    const receiverSocketId = onlineUsers[index]._id;
     io.to(receiverSocketId).emit("received", obj);
     //save chat to the database
     let message = new Message({
