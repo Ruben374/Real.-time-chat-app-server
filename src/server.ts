@@ -26,30 +26,27 @@ io.on("connection", async (socket: any) => {
   tratamento da conexão do usuario
    */
   socket.on("token", async (token: String) => {
+    console.log(token)
     const { Credential } = jwt.verify(token, process.env.JWT_SECRET ?? "");
     const user = {
-      id: socket.id,
-      email: Credential,
+      idSocket: socket.id,
+      _id: Credential,
     };
     onlineUsers.push(user);
-    if (onlineUsers.length >= 2) {
-      onlineUsers[1].email = "rubandre15@gmail.com";
-      console.log(onlineUsers)
-    }
-    
+    console.log(onlineUsers.length);
   });
   /* 
   quando é emitida uma mensagem
    */
   socket.on("chat message", function (obj: any) {
-    console.log("message: " + obj.body);
-    console.log(obj);
+    //console.log("message: " + obj.body);
+    //console.log(obj);
     //broadcast message to everyone in port:5000 except yourself.
     const index = onlineUsers.findIndex(
-      (user: any) => user.email === obj.receiver
+      (user: any) => user._id === obj.receiver
     );
     //socket.broadcast.emit("received", obj);
-    console.log(onlineUsers[index]);
+    //console.log(onlineUsers[index]);
     const receiverSocketId = onlineUsers[index].id;
     io.to(receiverSocketId).emit("received", obj);
     //save chat to the database
@@ -68,8 +65,8 @@ io.on("connection", async (socket: any) => {
   socket.on("disconnect", function () {
     //console.log(`o usuario ${socket.id} saiu`);
     const index = onlineUsers.findIndex((user: any) => user.id === socket.id);
+    console.log(onlineUsers[index]);
     onlineUsers.splice(index);
-    console.log(onlineUsers);
   });
 });
 mongoose
