@@ -1,7 +1,7 @@
 const Chat = require("../../models/Chat.model");
 const MessageController = require("../message.controller");
 import { Request, Response } from "express";
-const Users = require("../../models/Chat.model");
+const Users = require("../../models/Users.model");
 
 exports.CreateChat = async (req: Request, res: Response) => {
   //
@@ -54,16 +54,19 @@ exports.GetChat = async (req: Request, res: Response) => {
     filteredObjects.map(async (obj: any) => {
       if (obj.users[0] === res.locals.id) user = obj.users[1];
       else user = obj.users[0];
-      const w = await Users.findOne({ _id: user })
+      console.log(user)
+      const w = await Users.findOne({_id:user})
         .then((data: any) => data)
         .catch((error: Error) => {
           return res.status(200).json({ message: error.message });
         });
+        console.log(w)
       const d = {
         id: obj._id,
         with: {
           name: w.name,
           _id: w._id,
+          avatar:w.avatar
         },
         messages: [] as Array<any>,
         createdAt: obj.createdAt,

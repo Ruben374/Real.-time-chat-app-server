@@ -15,9 +15,13 @@ exports.GetUserData = async (req: Request, res: Response) => {
 
 exports.GetAllUsers = async (req: Request, res: Response) => {
   await Users.find()
-    .then((data: any) => {
-      return res.status(200).json(data);
-    })
+    .then((data: any) => 
+      {
+        const filteredData = data.filter((item: any) => item._id != res.locals.id);
+  
+        return res.status(200).json(filteredData);
+      }
+    )
     .catch((error: Error) => {
       return res.status(500).json({ message: error.message });
     });
