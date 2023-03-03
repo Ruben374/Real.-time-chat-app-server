@@ -86,5 +86,6 @@ exports.GetChat = async (req: Request, res: Response) => {
       data.push(d);
     })
   );
+  console.log(data)
   return res.status(200).json(data);
 };

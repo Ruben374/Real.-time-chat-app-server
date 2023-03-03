@@ -14,6 +14,11 @@ const userSchema = new mongoose.Schema(
       default: "",
       require: true,
     },
+    socket:{
+      type:String,
+      default:"",
+      require:true
+    }
   },
   {
     timestamps: true,
